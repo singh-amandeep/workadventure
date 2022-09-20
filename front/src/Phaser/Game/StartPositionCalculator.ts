@@ -88,11 +88,11 @@ export class StartPositionCalculator {
     }
 
     private initPositionFromLayerName(startPositionName?: string): boolean {
-        let foundLayer: ITiledMapLayer | null = null;
+        let foundLayer: ITiledMapLayer | undefined = undefined;
 
         const tileLayers = this.gameMapFrontWrapper.getFlatLayers().filter((layer) => layer.type === "tilelayer");
 
-        if (startPositionName !== undefined) {
+        if (startPositionName) {
             for (const layer of tileLayers) {
                 //we want to prioritize the selectedLayer rather than "start" layer
                 if (
@@ -104,10 +104,13 @@ export class StartPositionCalculator {
                 }
             }
         } else {
-            for (const layer of tileLayers) {
-                if (layer.name === this.DEFAULT_START_NAME || this.isStartObject(layer)) {
-                    foundLayer = layer;
-                    break;
+            foundLayer = tileLayers.find((layer) => layer.name === this.DEFAULT_START_NAME);
+            if (!foundLayer) {
+                for (const layer of tileLayers) {
+                    if (this.isStartObject(layer)) {
+                        foundLayer = layer;
+                        break;
+                    }
                 }
             }
         }
